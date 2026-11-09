@@ -277,6 +277,10 @@ static void media_stream_task(void *arg)
 
 static engine_err_t media_stream_begin(engine_t *eng)
 {
+    /* [ai-nagger patch] 구독 전용(발행 capturer 미제공)이면 아무것도 하지 않음. */
+    if (eng->options.media.capturer == NULL) {
+        return ENGINE_ERR_NONE;
+    }
     if (esp_capture_start(eng->options.media.capturer) != ESP_CAPTURE_ERR_OK) {
         ESP_LOGE(TAG, "Failed to start capture");
         return ENGINE_ERR_MEDIA;
@@ -1175,8 +1179,11 @@ engine_handle_t engine_init(const engine_options_t *options)
     }
     eng->renderer_handle = options->media.renderer;
 
-    if (enable_capture_sink(eng) != ENGINE_ERR_NONE) {
-        goto _init_failed;
+    /* [ai-nagger patch] 구독 전용(capturer 미제공)이면 capture sink 설정 생략. */
+    if (eng->options.media.capturer != NULL) {
+        if (enable_capture_sink(eng) != ENGINE_ERR_NONE) {
+            goto _init_failed;
+        }
     }
     return eng;
 
