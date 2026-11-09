@@ -306,7 +306,9 @@ peer_err_t peer_create(peer_handle_t *handle, peer_options_t *options)
         .video_dir = video_dir,
         .audio_info = options->media->audio_info,
         .video_info = options->media->video_info,
-        .enable_data_channel = true,
+        /* [ai-nagger patch] 데이터채널은 publisher 에만. subscriber 는 서버가 DC 를
+         * 안 만들어 SCTP INIT 이 무한 재전송(로그 도배)되므로 비활성화(오디오=SRTP 무관). */
+        .enable_data_channel = (peer->options.role == PEER_ROLE_PUBLISHER),
         .manual_ch_create = true,
         .no_auto_reconnect = false,
         .extra_cfg = &default_peer_cfg,
