@@ -38,7 +38,7 @@ static const char *TAG = "livekit_url";
     "&os=" URL_PARAM_OS \
     "&os_version=%s" \
     "&device_model=%d" \
-    "&auto_subscribe=false" \
+    "&auto_subscribe=true" \
     "&protocol=" URL_PARAM_PROTOCOL
 
 bool url_build(const url_build_options *options, char **out_url)
